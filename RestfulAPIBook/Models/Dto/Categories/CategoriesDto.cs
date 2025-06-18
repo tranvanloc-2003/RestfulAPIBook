@@ -1,4 +1,4 @@
-﻿namespace RestfulAPIBook.Models.Dto
+﻿namespace RestfulAPIBook.Models.Dto.Categories
 {
     public class CategoriesDto
     {

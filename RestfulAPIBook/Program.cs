@@ -13,6 +13,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 //______________________Goi Repository____________________________
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 //__________________________________________________________________
 //----------------------ket noi sql-----------------------------
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
