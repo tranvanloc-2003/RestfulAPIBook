@@ -18,10 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Dto\" />
     <Folder Include="Migration\" />
-    <Folder Include="Repository\Implements\" />
-    <Folder Include="Repository\Interface\" />
   </ItemGroup>
 
 </Project>
