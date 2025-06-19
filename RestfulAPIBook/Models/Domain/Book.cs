@@ -12,6 +12,8 @@
         public string UrlHandle { get; set; }
         public int Price { get; set; }
         public bool IsVisible { get; set; }
+        public ICollection<Brand> Brands { get; set; }
+        public ICollection<Categories> Categories { get; set; }
 
     }
 }

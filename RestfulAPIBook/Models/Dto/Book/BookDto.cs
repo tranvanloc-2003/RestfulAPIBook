@@ -1,4 +1,7 @@
-﻿namespace RestfulAPIBook.Models.Dto.Book
+﻿using RestfulAPIBook.Models.Dto.Brand;
+using RestfulAPIBook.Models.Dto.Categories;
+
+namespace RestfulAPIBook.Models.Dto.Book
 {
     public class BookDto
     {
@@ -12,5 +15,7 @@
         public string UrlHandle { get; set; }
         public int Price { get; set; }
         public bool IsVisible { get; set; }
+        public ICollection<BrandDto> BrandDtos { get; set; } = new List<BrandDto>();
+        public ICollection<CategoriesDto> CategoriesDtos { get; set; } = new List<CategoriesDto>();
     }
 }

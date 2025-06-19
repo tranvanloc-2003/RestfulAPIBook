@@ -35,20 +35,22 @@ namespace RestfulAPIBook.Repository.Implements
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await dbContext.Books.ToListAsync();
+            return await dbContext.Books.Include(x => x.Categories).Include(x => x.Brands).ToListAsync();
         }
 
         public async Task<Book?> GetById(Guid id)
         {
-            return await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            return await dbContext.Books.Include(x => x.Categories).Include(x => x.Brands).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Book?> UpdateAsync(Book book)
         {
-            var existingBook = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == book.Id);
+            var existingBook = await dbContext.Books.Include(x => x.Categories).Include(x => x.Brands).FirstOrDefaultAsync(x => x.Id == book.Id);
             if (existingBook != null)
             {
                 dbContext.Entry(existingBook).CurrentValues.SetValues(book);
+                existingBook.Categories = book.Categories;
+                existingBook.Brands = book.Brands;
                 await dbContext.SaveChangesAsync();
                 return existingBook;
             }

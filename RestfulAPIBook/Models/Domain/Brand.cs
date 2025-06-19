@@ -6,5 +6,6 @@
         public string NameBrand { get; set; }
         public string featuredImage { get; set; }
         public string UrlHandle { get; set; }
+        public ICollection<Book> Books { get; set; }
     }
 }

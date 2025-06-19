@@ -11,5 +11,8 @@
         public string UrlHandle { get; set; }
         public int Price { get; set; }
         public bool IsVisible { get; set; }
+        public Guid[] CategoriesId { get; set; }
+        public Guid[] BrandId { get; set; }
+
     }
 }

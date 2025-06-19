@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RestfulAPIBook.Models.Domain;
 using RestfulAPIBook.Models.Dto.Book;
+using RestfulAPIBook.Models.Dto.Brand;
+using RestfulAPIBook.Models.Dto.Categories;
 using RestfulAPIBook.Repository.Implements;
 using RestfulAPIBook.Repository.Interface;
 
@@ -12,10 +13,14 @@ namespace RestfulAPIBook.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookRepository bookRepository;
+        private readonly ICategoriesRepository categoriesRepository;
+        private readonly IBrandRepository brandRepository;
 
-        public BookController(IBookRepository bookRepository)
+        public BookController(IBookRepository bookRepository, ICategoriesRepository categoriesRepository,IBrandRepository brandRepository)
         {
             this.bookRepository = bookRepository;
+            this.categoriesRepository = categoriesRepository;
+            this.brandRepository = brandRepository;
         }
 
         //POST
@@ -33,8 +38,30 @@ namespace RestfulAPIBook.Controllers
                 Price = createBookRequestDto.Price,
                 PublicshedDate = createBookRequestDto.PublicshedDate,
                 UrlHandle = createBookRequestDto.UrlHandle,
+                Categories = new List<Categories>(),
+                Brands = new List<Brand>()
+
             };
-            await bookRepository.AddAsync(books);
+          
+            //lay theo id category
+            foreach (var GuidCategoriesId in createBookRequestDto.CategoriesId)
+            {
+                var categoriesRelationship = await categoriesRepository.GetById(GuidCategoriesId);
+                if(categoriesRelationship is not null)
+                {
+                    books.Categories.Add(categoriesRelationship);
+                }
+            }
+            // lay id theo brand
+            foreach(var GuidBrandId in createBookRequestDto.BrandId)
+            {
+              var brandRelationship =  await brandRepository.GetById(GuidBrandId);
+                if(brandRelationship is not null)
+                {
+                    books.Brands.Add(brandRelationship);
+                }
+            } 
+            var relationshipBook =  await bookRepository.AddAsync(books);
             var response = new BookDto
             {
                 Id = books.Id,
@@ -47,6 +74,20 @@ namespace RestfulAPIBook.Controllers
                 Price = books.Price,
                 PublicshedDate = books.PublicshedDate,
                 UrlHandle = books.UrlHandle,
+                CategoriesDtos = books.Categories.Select(x => new CategoriesDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle,
+                }).ToList(),
+                BrandDtos = books.Brands.Select(x => new BrandDto
+                {
+                    Id = x.Id,
+                    NameBrand = x.NameBrand,
+                    UrlHandle = x.UrlHandle,
+                    featuredImage = x.featuredImage,
+                }).ToList(),
+
             };
             return Ok(response);
         }
@@ -70,8 +111,19 @@ namespace RestfulAPIBook.Controllers
                     Price = book.Price,
                     PublicshedDate = book.PublicshedDate,
                     UrlHandle = book.UrlHandle,
-
-
+                    CategoriesDtos = book.Categories.Select(x => new CategoriesDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle,
+                    }).ToList(),
+                    BrandDtos = book.Brands.Select(x => new BrandDto
+                    {
+                        Id = x.Id,
+                        NameBrand = x.NameBrand,
+                        UrlHandle = x.UrlHandle,
+                        featuredImage = x.featuredImage,
+                    }).ToList(),
                 });
 
             }
@@ -84,7 +136,7 @@ namespace RestfulAPIBook.Controllers
         public async Task<IActionResult> GetBookById([FromRoute] Guid id)
         {
             var books = await bookRepository.GetById(id);
-            if(books is null)
+            if (books is null)
             {
                 return NotFound();
             }
@@ -100,6 +152,20 @@ namespace RestfulAPIBook.Controllers
                 Price = books.Price,
                 PublicshedDate = books.PublicshedDate,
                 UrlHandle = books.UrlHandle,
+                CategoriesDtos = books.Categories.Select(x => new CategoriesDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle,
+                }).ToList(),
+                BrandDtos = books.Brands.Select(x => new BrandDto
+                {
+                    Id = x.Id,
+                    NameBrand = x.NameBrand,
+                    UrlHandle = x.UrlHandle,
+                    featuredImage = x.featuredImage,
+                }).ToList(),
+
             };
             return Ok(response);
         }
@@ -120,9 +186,30 @@ namespace RestfulAPIBook.Controllers
                 Price = updateBookRequestDto.Price,
                 PublicshedDate = updateBookRequestDto.PublicshedDate,
                 UrlHandle = updateBookRequestDto.UrlHandle,
+                Categories = new List<Categories>(),
+                Brands = new List<Brand>()
             };
+            //lay id cua categories
+            foreach(var idCategories in updateBookRequestDto.CategoriesId)
+            {
+                var relationshipCategories = await categoriesRepository.GetById(idCategories);
+                if(relationshipCategories is not null)
+                {
+                    books.Categories.Add(relationshipCategories);
+                }
+            }
+            //lay id cua brand
+            foreach (var idBrand in updateBookRequestDto.BrandId)
+            {
+                var relationshipBrand = await brandRepository.GetById(idBrand);
+                if(relationshipBrand is not null)
+                {
+                    books.Brands.Add(relationshipBrand);
+                }
+            }
             var existingBook = await bookRepository.UpdateAsync(books);
-            if(existingBook is null)
+
+            if (existingBook is null)
             {
                 return NotFound();
             }
@@ -138,6 +225,19 @@ namespace RestfulAPIBook.Controllers
                 Price = books.Price,
                 PublicshedDate = books.PublicshedDate,
                 UrlHandle = books.UrlHandle,
+                CategoriesDtos = books.Categories.Select(x => new CategoriesDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle,
+                }).ToList(),
+                BrandDtos = books.Brands.Select(x => new BrandDto
+                {
+                    Id = x.Id,
+                    NameBrand = x.NameBrand,
+                    UrlHandle = x.UrlHandle,
+                    featuredImage = x.featuredImage,
+                }).ToList(),
             };
             return Ok(response);
         }
